@@ -15,7 +15,9 @@ export async function handleLogin(req, res) {
   try {
     const { phone } = req.body;
     const { user, token } = await loginUser({ phone });
-    res.json({ user, token });
+    // שמירת הטוקן ב-cookie
+    res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
+    res.json({ user });
   } catch (err) {
     res.status(401).json({ error: err.message });
   }
