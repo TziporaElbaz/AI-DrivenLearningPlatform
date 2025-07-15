@@ -3,7 +3,10 @@ import { registerUser, loginUser, getUserById, getAllUsers } from '../services/u
 
 export async function handleRegister(req: Request, res: Response) {
   try {
-    const { id, name, phone } = req.body;
+    const { id, name, phone } = req.query;
+    if (!id || !name || !phone || typeof id !== 'string' || typeof name !== 'string' || typeof phone !== 'string') {
+      return res.status(400).json({ error: 'id, name, and phone are required in query string' });
+    }
     const user = await registerUser({ id, name, phone });
     res.status(201).json(user);
   } catch (err: any) {
@@ -13,11 +16,14 @@ export async function handleRegister(req: Request, res: Response) {
 
 export async function handleLogin(req: Request, res: Response) {
   try {
-    const { phone } = req.body;
-    const { user, token } = await loginUser({ phone });
-    // שמירת הטוקן ב-cookie
+    const id = req.query.id;
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'User ID is required in query string' });
+    }
+    const { user, token } = await loginUser({ id });
+    // Save token in cookie
     res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
-    res.json({ user ,token});
+    res.json({ user, token });
   } catch (err: any) {
     res.status(401).json({ error: err.message });
   }

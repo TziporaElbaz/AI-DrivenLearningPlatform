@@ -18,24 +18,30 @@ const router: Router = express.Router();
  *     summary: Register a new user
  *     tags:
  *       - Users
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               id:
- *                 type: string
- *               name:
- *                 type: string
- *               phone:
- *                 type: string
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user's name
+ *       - in: query
+ *         name: phone
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user's phone
  *     responses:
  *       201:
  *         description: User created
  */
-router.post('/register', validateRequest(['id', 'name', 'phone']), handleRegister);
+router.post('/register', validateRequest('register'), handleRegister);
 
 /**
  * @openapi
@@ -44,20 +50,18 @@ router.post('/register', validateRequest(['id', 'name', 'phone']), handleRegiste
  *     summary: Login user
  *     tags:
  *       - Users
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone:
- *                 type: string
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user ID
  *     responses:
  *       200:
  *         description: Login successful
  */
-router.post('/login', validateRequest(['phone']), handleLogin);
+router.post('/login', handleLogin);
 
 /**
  * @openapi

@@ -5,8 +5,8 @@ export async function registerUser({ id, name, phone }: { id: string; name: stri
   return User.create({ id, name, phone });
 }
 
-export async function loginUser({ phone }: { phone: string }) {
-  const user = await User.findOne({ where: { phone } });
+export async function loginUser({ id }: { id: string }) {
+  const user = await User.findByPk(id);
   if (!user) throw new Error('User not found');
   const token = jwt.sign({ id: user.id, name: user.name }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
   return { user, token };

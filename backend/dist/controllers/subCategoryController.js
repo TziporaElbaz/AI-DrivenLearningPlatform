@@ -40,7 +40,10 @@ function handleCreateSubCategory(req, res) {
 function handleUpdateSubCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.params.categoryId);
+            const id = Number(req.params.id);
+            if (isNaN(id)) {
+                return res.status(400).json({ error: 'Invalid subcategory ID' });
+            }
             const { name, category_id } = req.body;
             const subCategory = yield (0, subCategoryService_1.updateSubCategory)(id, { name, category_id: Number(category_id) });
             res.json(subCategory);
@@ -53,7 +56,7 @@ function handleUpdateSubCategory(req, res) {
 function handleDeleteSubCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const id = Number(req.params.categoryId);
+            const id = Number(req.params.id);
             yield (0, subCategoryService_1.deleteSubCategory)(id);
             res.json({ message: 'SubCategory deleted' });
         }
