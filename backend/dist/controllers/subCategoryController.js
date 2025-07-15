@@ -29,7 +29,7 @@ function handleCreateSubCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { name, category_id } = req.body;
-            const subCategory = yield (0, subCategoryService_1.createSubCategory)({ name, category_id });
+            const subCategory = yield (0, subCategoryService_1.createSubCategory)({ name, category_id: Number(category_id) });
             res.status(201).json(subCategory);
         }
         catch (err) {
@@ -41,7 +41,8 @@ function handleUpdateSubCategory(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const id = Number(req.params.categoryId);
-            const subCategory = yield (0, subCategoryService_1.updateSubCategory)(id, req.body);
+            const { name, category_id } = req.body;
+            const subCategory = yield (0, subCategoryService_1.updateSubCategory)(id, { name, category_id: Number(category_id) });
             res.json(subCategory);
         }
         catch (err) {

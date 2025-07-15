@@ -33,7 +33,7 @@ function handleLogin(req, res) {
             const { user, token } = yield (0, userService_1.loginUser)({ phone });
             // שמירת הטוקן ב-cookie
             res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
-            res.json({ user });
+            res.json({ user, token });
         }
         catch (err) {
             res.status(401).json({ error: err.message });
@@ -43,7 +43,7 @@ function handleLogin(req, res) {
 function handleGetUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const user = yield (0, userService_1.getUserById)(req.params.id);
+            const user = yield (0, userService_1.getUserById)(req.user.id);
             if (!user)
                 return res.status(404).json({ error: 'User not found' });
             res.json(user);

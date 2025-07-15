@@ -17,7 +17,7 @@ export async function handleLogin(req: Request, res: Response) {
     const { user, token } = await loginUser({ phone });
     // שמירת הטוקן ב-cookie
     res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict' });
-    res.json({ user });
+    res.json({ user ,token});
   } catch (err: any) {
     res.status(401).json({ error: err.message });
   }
@@ -25,7 +25,7 @@ export async function handleLogin(req: Request, res: Response) {
 
 export async function handleGetUser(req: Request, res: Response) {
   try {
-    const user = await getUserById(req.params.id);
+    const user = await getUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
   } catch (err: any) {

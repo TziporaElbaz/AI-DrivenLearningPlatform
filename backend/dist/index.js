@@ -25,6 +25,15 @@ const swaggerSpec = (0, swagger_jsdoc_1.default)({
             title: 'AI Learning Platform API',
             version: '1.0.0',
         },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                }
+            }
+        }
     },
     apis: ['./src/routes/*.ts'],
 });

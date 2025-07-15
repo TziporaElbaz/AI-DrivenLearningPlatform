@@ -13,7 +13,7 @@ export async function handleGetSubCategories(req: Request, res: Response) {
 export async function handleCreateSubCategory(req: Request, res: Response) {
   try {
     const { name, category_id } = req.body;
-    const subCategory = await createSubCategory({ name, category_id });
+    const subCategory = await createSubCategory({ name, category_id: Number(category_id) });
     res.status(201).json(subCategory);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -22,8 +22,9 @@ export async function handleCreateSubCategory(req: Request, res: Response) {
 
 export async function handleUpdateSubCategory(req: Request, res: Response) {
   try {
-    const id =Number(req.params.categoryId)
-    const subCategory = await updateSubCategory(id, req.body);
+    const id = Number(req.params.categoryId);
+    const { name, category_id } = req.body;
+    const subCategory = await updateSubCategory(id, { name, category_id: Number(category_id) });
     res.json(subCategory);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -32,7 +33,7 @@ export async function handleUpdateSubCategory(req: Request, res: Response) {
 
 export async function handleDeleteSubCategory(req: Request, res: Response) {
   try {
-    const id = Number(req.params.categoryId)
+    const id = Number(req.params.categoryId);
     await deleteSubCategory(id);
     res.json({ message: 'SubCategory deleted' });
   } catch (err: any) {

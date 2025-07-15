@@ -15,6 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Swagger setup
+
 const swaggerSpec = swaggerJsdoc({
   definition: {
     openapi: '3.0.0',
@@ -22,6 +23,15 @@ const swaggerSpec = swaggerJsdoc({
       title: 'AI Learning Platform API',
       version: '1.0.0',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    }
   },
   apis: ['./src/routes/*.ts'],
 });

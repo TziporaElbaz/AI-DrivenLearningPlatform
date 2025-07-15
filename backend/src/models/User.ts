@@ -5,6 +5,7 @@ interface UserAttributes {
   id: string;
   name: string;
   phone: string;
+  is_admin?: boolean;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
@@ -13,6 +14,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public id!: string;
   public name!: string;
   public phone!: string;
+  public is_admin?: boolean; 
 }
 
 User.init(
@@ -31,6 +33,11 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    is_admin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+
   },
   {
     sequelize,
