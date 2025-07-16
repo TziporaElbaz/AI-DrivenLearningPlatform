@@ -1,0 +1,68 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+  font-family: 'Heebo', Arial, sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 3rem 1rem 3rem;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.home-header h1 {
+  font-size: 2.2rem;
+  color: #1a237e;
+  margin: 0;
+}
+
+.login-btn {
+  background: linear-gradient(90deg, #1a237e 0%, #3949ab 100%);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 0.7rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-btn:hover {
+  background: linear-gradient(90deg, #3949ab 0%, #1a237e 100%);
+}
+
+.categories-section {
+  padding: 2rem 3rem;
+}
+
+.categories-section h2 {
+  color: #3949ab;
+  margin-bottom: 1.5rem;
+}
+
+.categories-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.category-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(60,60,120,0.07);
+  padding: 1.2rem 2.2rem;
+  font-size: 1.15rem;
+  color: #222;
+  min-width: 180px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.category-card:hover {
+  box-shadow: 0 6px 18px rgba(60,60,120,0.13);
+  transform: translateY(-4px) scale(1.03);
+}
