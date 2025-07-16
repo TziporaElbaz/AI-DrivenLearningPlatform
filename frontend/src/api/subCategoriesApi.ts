@@ -4,7 +4,7 @@ import type { SubCategory } from '../types/models';
 export const subCategoriesApi = createApi({
   reducerPath: 'subCategoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5433/api',
+    baseUrl: 'http://localhost:5000/api',
     credentials: 'include',
   }),
   endpoints: (builder) => ({

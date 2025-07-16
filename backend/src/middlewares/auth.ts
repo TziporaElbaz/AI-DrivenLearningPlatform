@@ -11,16 +11,19 @@ declare global {
 }
 
 export default async function auth(req: Request, res: Response, next: NextFunction) {
+  // קודם כל ננסה לקרוא מהעוגיה
+  const token = req.cookies?.token;
+  // אם אין בעוגיה, ננסה מה-Authorization header
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+  const headerToken = authHeader ? authHeader.split(' ')[1] : null;
+  const finalToken = token || headerToken;
+  if (!finalToken) return res.status(401).json({ error: 'No token provided' });
 
-  const token = authHeader.split(' ')[1];
   try {
-     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-    // משיכת המשתמש מהדאטאבייס לפי id
+    const decoded: any = jwt.verify(finalToken, process.env.JWT_SECRET as string);
     const user = await User.findByPk(decoded.id);
     if (!user) return res.status(401).json({ error: 'User not found' });
-    req.user = user; // כולל is_admin
+    req.user = user;
     next();
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });

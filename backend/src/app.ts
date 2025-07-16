@@ -8,6 +8,7 @@ import categoryRoutes from './routes/categoryRoutes';
 import subCategoryRoutes from './routes/subCategoryRoutes';
 import promptRoutes from './routes/promptRoutes';
 import errorHandler from './middlewares/errorHandler';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
@@ -34,8 +35,12 @@ const swaggerSpec = swaggerJsdoc({
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/subcategories', subCategoryRoutes);

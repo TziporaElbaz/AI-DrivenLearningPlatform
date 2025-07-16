@@ -4,7 +4,7 @@ import type { Prompt } from '../types/models';
 export const promptsApi = createApi({
   reducerPath: 'promptsApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5433/api',
+    baseUrl: 'http://localhost:5000/api',
     credentials: 'include', 
   }),
   endpoints: (builder) => ({

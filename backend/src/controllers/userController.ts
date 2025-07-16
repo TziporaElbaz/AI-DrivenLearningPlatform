@@ -29,6 +29,15 @@ export async function handleLogin(req: Request, res: Response) {
   }
 }
 
+export async function handleLogout(req: Request, res: Response) {
+  try {
+    res.clearCookie('token', { httpOnly: true, sameSite: 'strict' });
+    res.json({ message: 'Logged out successfully' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Logout failed' });
+  }
+}
+
 export async function handleGetUser(req: Request, res: Response) {
   try {
     const user = await getUserById(req.user.id);

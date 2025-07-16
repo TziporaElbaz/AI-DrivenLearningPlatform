@@ -3,7 +3,7 @@ import type { Category, User, Prompt } from '../types/models';
 
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5433/api' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api' }),
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
       query: () => 'categories',

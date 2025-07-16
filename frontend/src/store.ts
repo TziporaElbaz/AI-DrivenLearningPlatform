@@ -1,23 +1,24 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { api } from './services/api';
+
 import { usersApi } from './api/usersApi';
 import { categoriesApi } from './api/categoriesApi';
 import { promptsApi } from './api/promptsApi';
 import { authApi } from './api/authApi';
+import { subCategoriesApi } from './api/subCategoriesApi';  
 
 export const store = configureStore({
   reducer: {
-    [api.reducerPath]: api.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
     [categoriesApi.reducerPath]: categoriesApi.reducer,
     [promptsApi.reducerPath]: promptsApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
+    [subCategoriesApi.reducerPath]: subCategoriesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
-      .concat(api.middleware)
       .concat(usersApi.middleware)
       .concat(categoriesApi.middleware)
+      .concat(subCategoriesApi.middleware)
       .concat(promptsApi.middleware)
       .concat(authApi.middleware),
 });

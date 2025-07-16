@@ -4,7 +4,7 @@ import type { Category } from '../types/models';
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5433/api',
+    baseUrl: 'http://localhost:5000/api',
     credentials: 'include',
   }),
   endpoints: (builder) => ({

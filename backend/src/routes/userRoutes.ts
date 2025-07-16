@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import {
   handleRegister,
   handleLogin,
+  handleLogout,
   handleGetUser,
   handleGetAllUsers
 } from '../controllers/userController';
@@ -10,6 +11,19 @@ import isAdmin from '../middlewares/isAdmin';
 import validateRequest from '../middlewares/validateRequest';
 
 const router: Router = express.Router();
+
+/**
+ * @openapi
+ * /api/users/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags:
+ *       - Users
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ */
+router.post('/logout', handleLogout);
 
 /**
  * @openapi
