@@ -1,27 +1,36 @@
 import Prompt from '../models/Prompt';
 import Category from '../models/Category';
 import SubCategory from '../models/SubCategory';
-import axios from 'axios';
-interface OpenAIResponse {
-  choices: { message: { content: string } }[];
-}
+import { sendPromptToOpenAI } from './openaiService';
+
 export async function createPrompt({ userId, categoryId, subCategoryId, promptText }: { userId: string; categoryId: number; subCategoryId: number; promptText: string }) {
-  const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: promptText }]
-  }, {
-    headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` }
-  }) as { data: OpenAIResponse };
+  try {
+    console.log('🔍 Starting createPrompt with:', { userId, categoryId, subCategoryId });
+    // Get category and subcategory for context
+    const category = await Category.findByPk(categoryId);
+    const subCategory = await SubCategory.findByPk(subCategoryId);
+    
+    console.log('📂 Found category:', category?.name, 'subcategory:', subCategory?.name);
+    const topic = `${category?.name} - ${subCategory?.name}`;
+    console.log('🤖 Calling OpenAI...');
+    // Use the OpenAI service
+    const aiResponse = await sendPromptToOpenAI(promptText);
+    console.log('✅ OpenAI response received');
+    // Save to database
+    const prompt = await Prompt.create({
+      user_id: userId,
+      category_id: categoryId,
+      sub_category_id: subCategoryId,
+      prompt: promptText,
+      response: aiResponse,
+    });
 
-  const prompt = await Prompt.create({
-    user_id: userId,
-    category_id: categoryId,
-    sub_category_id: subCategoryId,
-    prompt: promptText,
-    response: response.data.choices[0].message.content,
-  });
-
-  return prompt;
+    return prompt;
+  } catch (error: any) {
+    console.error('❌ Error in createPrompt:', error.message);
+    console.error('Error creating prompt:', error);
+    throw new Error(`Failed to create prompt: ${error.message}`);
+  }
 }
 
 export async function getUserPrompts(userId: string) {
