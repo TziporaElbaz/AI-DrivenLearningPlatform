@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, TextField, Button, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../api/authApi';
 
 interface LoginFormProps {
@@ -9,11 +10,18 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [idNumber, setIdNumber] = React.useState('');
   const [login, { isLoading, error }] = useLoginMutation();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ idNumber }).unwrap();
+      const result = await login({ idNumber }).unwrap();
+      // בדיקה אם המשתמש אדמין והפניה לדשבורד המתאים
+      if (result.user?.is_admin) {
+        navigate('/admin');
+      } else {
+        // navigate('/dashboard');
+      }
       onSuccess();
     } catch {}
   };

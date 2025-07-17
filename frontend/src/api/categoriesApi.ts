@@ -7,9 +7,11 @@ export const categoriesApi = createApi({
     baseUrl: 'http://localhost:5000/api',
     credentials: 'include',
   }),
+  tagTypes: ['Category'],
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
       query: () => 'categories',
+      providesTags: ['Category'],
     }),
     createCategory: builder.mutation<Category, { name: string }>({
       query: (body) => ({
@@ -17,6 +19,7 @@ export const categoriesApi = createApi({
         method: 'POST',
         body,
       }),
+      invalidatesTags: ['Category'],
     }),
     updateCategory: builder.mutation<Category, { id: string; name: string }>({
       query: ({ id, ...body }) => ({
@@ -24,12 +27,14 @@ export const categoriesApi = createApi({
         method: 'PUT',
         body,
       }),
+      invalidatesTags: ['Category'],
     }),
     deleteCategory: builder.mutation<{ message: string }, string>({
       query: (id) => ({
         url: `categories/${id}`,
         method: 'DELETE',
       }),
+      invalidatesTags: ['Category'],
     }),
   }),
 });

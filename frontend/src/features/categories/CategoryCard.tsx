@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
+import GenericCard from '../../components/GenericCard';
 
 interface CategoryCardProps {
   name: string;
@@ -7,22 +7,11 @@ interface CategoryCardProps {
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ name, onClick }) => (
-  <Card
-    sx={{
-      borderRadius: 3,
-      boxShadow: 3,
-      cursor: 'pointer',
-      transition: '0.2s',
-      '&:hover': { boxShadow: 8, transform: 'scale(1.03)' },
-    }}
+  <GenericCard 
+    title={name} 
     onClick={onClick}
-  >
-    <CardContent>
-      <Typography variant="h6" color="text.primary" align="center">
-        {name}
-      </Typography>
-    </CardContent>
-  </Card>
+    variant="clickable"
+  />
 );
 
 export default CategoryCard;

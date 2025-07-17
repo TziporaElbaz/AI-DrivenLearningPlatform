@@ -7,28 +7,33 @@ export const authApi = createApi({
     baseUrl: 'http://localhost:5000/api',
     credentials: 'include',
   }),
+  tagTypes: ['User'],
   endpoints: (builder) => ({
     logout: builder.mutation<{ message: string }, void>({
       query: () => ({
         url: 'users/logout',
         method: 'POST',
       }),
+      invalidatesTags: ['User'],
     }),
     register: builder.mutation<User, { idNumber: string; name: string; phone: string }>({
       query: ({ idNumber, name, phone }) => ({
         url: `users/register?id=${encodeURIComponent(idNumber)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`,
         method: 'POST',
       }),
+      invalidatesTags: ['User'],
     }),
-    login: builder.mutation<User, { idNumber: string }>({
+    login: builder.mutation<{ user: User; token: string }, { idNumber: string }>({
       query: ({ idNumber }) => ({
         url: `users/login?id=${encodeURIComponent(idNumber)}`,
         method: 'POST',
       }),
+      invalidatesTags: ['User'],
     }),
     getMe: builder.query<User, void>({
-  query: () => 'users/me',
-}),
+      query: () => 'users/me',
+      providesTags: ['User'],
+    }),
   }),
 });
 
