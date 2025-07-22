@@ -1,37 +1,64 @@
-import React from 'react';
+import React, { useCallback, useMemo, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   Button,
-  Chip,
   Box
 } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useGetUsersQuery } from '../api/usersApi';
+import { useAdminUsers } from '../hooks/useAdminUsers';
 import StatCard from '../components/StatCard';
+import GenericTable from '../components/GenericTable';
+import { createUserColumns } from '../features/users/userTableConfig';
 
-// pages/AdminUsersPage.tsx
-const AdminUsersPage: React.FC = () => {
+
+const AdminUsersPage: React.FC = memo(() => {
   const navigate = useNavigate();
-  const { data: users } = useGetUsersQuery();
+ 
+  const { users, userStats, isLoading, error } = useAdminUsers();
+
+
+  const handleViewHistory = useCallback((userId: string) => {
+    navigate(`/admin/users/${userId}/history`);
+  }, [navigate]);
+
+
+  const handleBackToAdmin = useCallback(() => {
+    navigate('/admin');
+  }, [navigate]);
+
+  
+  const userColumns = useMemo(() => {
+    return createUserColumns(handleViewHistory);
+  }, [handleViewHistory]);
+
+  if (isLoading) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Typography>טוען משתמשים...</Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Typography color="error">שגיאה בטעינת המשתמשים</Typography>
+      </Container>
+    );
+  }
   
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* כפתור חזרה */}
+      {/* כפתור חזרה מותב */}
       <Box display="flex" alignItems="center" mb={3}>
         <Button
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate('/admin')}
+          onClick={handleBackToAdmin}
           variant="outlined"
           sx={{ mb: 2 }}
         >
@@ -42,69 +69,42 @@ const AdminUsersPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         ניהול משתמשים
       </Typography>
-      
-      {/* סטטיסטיקות */}
+  
       <Box display="flex" gap={3} mb={4}>
           <StatCard 
             icon={<PeopleIcon sx={{ fontSize: 40, color: 'primary.main' }} />}
             title="סך המשתמשים" 
-            value={users?.length || 0} 
+            value={userStats.total} 
             color="primary"
           />
           <StatCard 
             icon={<AdminPanelSettingsIcon sx={{ fontSize: 40, color: 'secondary.main' }} />}
             title="אדמינים" 
-            value={users?.filter(user => user.is_admin).length || 0}
+            value={userStats.admins}
             color="secondary"
           />
           <StatCard 
             icon={<VerifiedUserIcon sx={{ fontSize: 40, color: 'success.main' }} />}
             title="משתמשים רגילים" 
-            value={users?.filter(user => !user.is_admin).length || 0}
+            value={userStats.regular}
             color="success"
           />
         </Box>
 
-        {/* טבלת משתמשים */}
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" mb={3}>כל המשתמשים</Typography>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>שם</TableCell>
-                <TableCell>תעודת זהות</TableCell>
-                <TableCell>טלפון</TableCell>
-                <TableCell>סוג משתמש</TableCell>
-                <TableCell>פעולות</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users?.map(user => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
-                  <TableCell>
-                    <Chip 
-                      label={user.is_admin ? "אדמין" : "משתמש"} 
-                      color={user.is_admin ? "primary" : "default"}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button 
-                      size="small" 
-                      onClick={() => navigate(`/admin/users/${user.id}/history`)}
-                    >
-                      צפה בהיסטוריה
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
+     
+        <GenericTable
+          data={users}
+          columns={userColumns}
+          keyExtractor={(user) => user.id}
+          title="כל המשתמשים"
+          isLoading={isLoading}
+          error={error}
+          emptyMessage="אין משתמשים במערכת"
+        />
       </Container>
   );
-};
+});
+
+AdminUsersPage.displayName = 'AdminUsersPage';
 
 export default AdminUsersPage;

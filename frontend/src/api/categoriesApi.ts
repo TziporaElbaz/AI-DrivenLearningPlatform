@@ -4,7 +4,7 @@ import type { Category } from '../types/models';
 export const categoriesApi = createApi({
   reducerPath: 'categoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
     credentials: 'include',
   }),
   tagTypes: ['Category'],
@@ -12,6 +12,7 @@ export const categoriesApi = createApi({
     getCategories: builder.query<Category[], void>({
       query: () => 'categories',
       providesTags: ['Category'],
+      transformResponse: (response: { success: boolean; data: Category[] }) => response.data,
     }),
     createCategory: builder.mutation<Category, { name: string }>({
       query: (body) => ({
@@ -20,6 +21,7 @@ export const categoriesApi = createApi({
         body,
       }),
       invalidatesTags: ['Category'],
+      transformResponse: (response: { success: boolean; data: Category }) => response.data,
     }),
     updateCategory: builder.mutation<Category, { id: string; name: string }>({
       query: ({ id, ...body }) => ({
@@ -28,6 +30,7 @@ export const categoriesApi = createApi({
         body,
       }),
       invalidatesTags: ['Category'],
+      transformResponse: (response: { success: boolean; data: Category }) => response.data,
     }),
     deleteCategory: builder.mutation<{ message: string }, string>({
       query: (id) => ({

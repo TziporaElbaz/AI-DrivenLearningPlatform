@@ -1,30 +1,58 @@
-// ...המרה ל-TypeScript תתבצע כאן בהמשך...
-import { Request, Response } from 'express';
-import { createPrompt, getUserPrompts } from '../services/promptService';
+import { Response, NextFunction } from 'express';
+import { createPrompt, getUserPrompts, getUserPromptsByUserId } from '../services/promptService';
+import { asyncWrapper } from '../middlewares/asyncWrapper';
+import { AppError } from '../middlewares/errorHandler';
+import { AuthRequest } from '../types/auth';
 
-interface AuthRequest extends Request {
-  user?: { id: string  };
-}
-
-export async function handleCreatePrompt(req: AuthRequest, res: Response) {
-  try {
-    const { categoryId, subCategoryId, promptText } = req.body;
-    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-    const userId = req.user.id; // בהנחה שיש JWT
-    const prompt = await createPrompt({ userId, categoryId, subCategoryId, promptText });
-    res.status(201).json(prompt);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+export const handleCreatePrompt = asyncWrapper(async (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    throw new AppError('Unauthorized - Authentication required', 401);
   }
-}
-
-export async function handleGetUserPrompts(req: AuthRequest, res: Response) {
-  try {
-    if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
-    const userId = req.user.id;
-    const prompts = await getUserPrompts(userId);
-    res.json(prompts);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  
+  const { categoryId, subCategoryId, promptText } = req.body;
+  
+  if (!categoryId || !subCategoryId || !promptText) {
+    throw new AppError('categoryId, subCategoryId, and promptText are required', 400);
   }
-}
+  
+  const userId = req.user.id;
+  const prompt = await createPrompt({ userId, categoryId, subCategoryId, promptText });
+  
+  res.status(201).json({
+    success: true,
+    data: prompt
+  });
+});
+
+export const handleGetUserPrompts = asyncWrapper(async (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    throw new AppError('Unauthorized - Authentication required', 401);
+  }
+  
+  const userId = req.user.id;
+  const prompts = await getUserPrompts(userId);
+  
+  res.json({
+    success: true,
+    data: prompts
+  });
+});
+
+export const handleGetUserPromptsByUserId = asyncWrapper(async (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    throw new AppError('Unauthorized - Authentication required', 401);
+  }
+  
+  const { userId } = req.params;
+  
+  if (!userId) {
+    throw new AppError('User ID parameter is required', 400);
+  }
+  
+  const prompts = await getUserPromptsByUserId(userId);
+  
+  res.json({
+    success: true,
+    data: prompts
+  });
+});

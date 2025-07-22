@@ -4,7 +4,7 @@ import type { User } from '../types/models';
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
     credentials: 'include',
   }),
   tagTypes: ['User'],
@@ -15,6 +15,7 @@ export const authApi = createApi({
         method: 'POST',
       }),
       invalidatesTags: ['User'],
+      transformResponse: (response: { success: boolean; message: string }) => ({ message: response.message }),
     }),
     register: builder.mutation<User, { idNumber: string; name: string; phone: string }>({
       query: ({ idNumber, name, phone }) => ({
@@ -22,6 +23,7 @@ export const authApi = createApi({
         method: 'POST',
       }),
       invalidatesTags: ['User'],
+      transformResponse: (response: { success: boolean; data: User }) => response.data,
     }),
     login: builder.mutation<{ user: User; token: string }, { idNumber: string }>({
       query: ({ idNumber }) => ({
@@ -29,10 +31,12 @@ export const authApi = createApi({
         method: 'POST',
       }),
       invalidatesTags: ['User'],
+      transformResponse: (response: { success: boolean; data: { user: User; token: string } }) => response.data,
     }),
     getMe: builder.query<User, void>({
       query: () => 'users/me',
       providesTags: ['User'],
+      transformResponse: (response: { success: boolean; data: User }) => response.data,
     }),
   }),
 });

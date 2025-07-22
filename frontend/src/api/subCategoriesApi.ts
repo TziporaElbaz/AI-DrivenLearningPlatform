@@ -4,36 +4,40 @@ import type { SubCategory } from '../types/models';
 export const subCategoriesApi = createApi({
   reducerPath: 'subCategoriesApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
     credentials: 'include',
   }),
   endpoints: (builder) => ({
-    // שליפת כל הסאבקטגוריות לקטגוריה מסוימת
+
     getSubCategories: builder.query<SubCategory[], number>({
       query: (categoryId) => `subcategories/${categoryId}`,
+      transformResponse: (response: { success: boolean; data: SubCategory[] }) => response.data,
     }),
-    // יצירת סאבקטגוריה (רק לאדמין)
+  
     createSubCategory: builder.mutation<SubCategory, { name: string; category_id: number }>({
       query: (body) => ({
         url: 'subcategories',
         method: 'POST',
         body,
       }),
+      transformResponse: (response: { success: boolean; data: SubCategory }) => response.data,
     }),
-    // עדכון סאבקטגוריה (רק לאדמין)
+
     updateSubCategory: builder.mutation<SubCategory, { id: number; name: string; category_id: number }>({
       query: ({ id, ...body }) => ({
         url: `subcategories/${id}`,
         method: 'PUT',
         body,
       }),
+      transformResponse: (response: { success: boolean; data: SubCategory }) => response.data,
     }),
-    // מחיקת סאבקטגוריה (רק לאדמין)
+
     deleteSubCategory: builder.mutation<{ message: string }, number>({
       query: (id) => ({
         url: `subcategories/${id}`,
         method: 'DELETE',
       }),
+      transformResponse: (response: { success: boolean; message: string }) => ({ message: response.message }),
     }),
   }),
 });

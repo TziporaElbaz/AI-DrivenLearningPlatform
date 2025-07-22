@@ -11,11 +11,32 @@ export async function createPrompt({ userId, categoryId, subCategoryId, promptTe
     const subCategory = await SubCategory.findByPk(subCategoryId);
     
     console.log('📂 Found category:', category?.name, 'subcategory:', subCategory?.name);
-    const topic = `${category?.name} - ${subCategory?.name}`;
-    console.log('🤖 Calling OpenAI...');
-    // Use the OpenAI service
-    const aiResponse = await sendPromptToOpenAI(promptText);
+    
+    // Build contextual prompt for better AI responses
+    const contextualPrompt = `אתה מורה מומחה ומעניין בתחום "${category?.name}" ובפרט בנושא "${subCategory?.name}".
+תפקידך ללמד את המשתמש בצורה חוויתית ומעניינת שמעוררת סקרנות ורצון ללמוד עוד.
+
+הנחיות למענה:
+- אם השאלה קשורה לנושא "${subCategory?.name}" - תן תשובה מקיפה ומרתקת
+- אם השאלה לא קשורה ישירות, קשר אותה לנושא בצורה יצירתית אבל חזור מהר לנושא המרכזי
+- ספר על "${subCategory?.name}" בהקשר של "${category?.name}" בכל העולם - זה מרחיב אופקים ומעניין!
+- השתמש בדוגמאות מרתקות, סיפורים מעניינים וידע מפתיע הקשורים לנושא
+- תוכל לקשר גם לנושאים אחרים בתחום "${category?.name}" אם זה רלוונטי
+- שמור על 70-80% מהתשובה ממוקדת בנושא "${subCategory?.name}"
+- עודד את המשתמש לשאול עוד שאלות בנושא
+- היה נלהב ומעורר השראה אבל אל תסטה יותר מידי
+
+התחום הכללי: ${category?.name}
+הנושא הספציפי: ${subCategory?.name}
+שאלת הלומד: ${promptText}
+
+תשובתך המרתקת והמעוררת סקרנות:`;
+    
+    console.log('🤖 Calling OpenAI with contextual prompt...');
+    // Use the OpenAI service with enhanced context
+    const aiResponse = await sendPromptToOpenAI(contextualPrompt);
     console.log('✅ OpenAI response received');
+    
     // Save to database
     const prompt = await Prompt.create({
       user_id: userId,
@@ -36,12 +57,55 @@ export async function createPrompt({ userId, categoryId, subCategoryId, promptTe
 export async function getUserPrompts(userId: string) {
   return Prompt.findAll({
     where: { user_id: userId },
-    include: [Category, SubCategory]
+    include: [
+      { 
+        model: Category, 
+        as: 'category',
+        attributes: ['id', 'name']
+      },
+      { 
+        model: SubCategory, 
+        as: 'subCategory',
+        attributes: ['id', 'name']
+      }
+    ],
+    order: [['created_at', 'DESC']]
   });
 }
 
 export async function getAllPrompts() {
   return Prompt.findAll({
-    include: [Category, SubCategory]
+    include: [
+      { 
+        model: Category, 
+        as: 'category',
+        attributes: ['id', 'name']
+      },
+      { 
+        model: SubCategory, 
+        as: 'subCategory',
+        attributes: ['id', 'name']
+      }
+    ],
+    order: [['created_at', 'DESC']]
+  });
+}
+
+export async function getUserPromptsByUserId(userId: string) {
+  return Prompt.findAll({
+    where: { user_id: userId },
+    include: [
+      { 
+        model: Category, 
+        as: 'category',
+        attributes: ['id', 'name']
+      },
+      { 
+        model: SubCategory, 
+        as: 'subCategory',
+        attributes: ['id', 'name']
+      }
+    ],
+    order: [['created_at', 'DESC']]
   });
 }

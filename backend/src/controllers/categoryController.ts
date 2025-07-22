@@ -1,41 +1,63 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getAllCategories, createCategory, updateCategory, deleteCategory } from '../services/categoryService';
+import { asyncWrapper } from '../middlewares/asyncWrapper';
+import { AppError } from '../middlewares/errorHandler';
 
-export async function handleGetAllCategories(req: Request, res: Response) {
-  try {
-    const categories = await getAllCategories();
-    res.json(categories);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-}
+export const handleGetAllCategories = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const categories = await getAllCategories();
+  
+  res.json({
+    success: true,
+    data: categories
+  });
+});
 
-export async function handleCreateCategory(req: Request, res: Response) {
-  try {
-    const { name } = req.body;
-    const category = await createCategory({ name });
-    res.status(201).json(category);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleCreateCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { name } = req.body;
+  
+  if (!name || typeof name !== 'string' || name.trim() === '') {
+    throw new AppError('Category name is required and must be a non-empty string', 400);
   }
-}
+  
+  const category = await createCategory({ name: name.trim() });
+  
+  res.status(201).json({
+    success: true,
+    data: category
+  });
+});
 
-export async function handleUpdateCategory(req: Request, res: Response) {
-  try {
-    const id = req.params.id;
-    const category = await updateCategory(id, req.body);
-    res.json(category);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleUpdateCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    throw new AppError('Category ID is required', 400);
   }
-}
+  
+  const { name } = req.body;
+  if (name && (typeof name !== 'string' || name.trim() === '')) {
+    throw new AppError('Category name must be a non-empty string', 400);
+  }
+  
+  const category = await updateCategory(id, req.body);
+  
+  res.json({
+    success: true,
+    data: category
+  });
+});
 
-export async function handleDeleteCategory(req: Request, res: Response) {
-  try {
-    const id = req.params.id;
-    await deleteCategory(id);
-    res.json({ message: 'Category deleted' });
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleDeleteCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  
+  if (!id) {
+    throw new AppError('Category ID is required', 400);
   }
-}
+  
+  await deleteCategory(id);
+  
+  res.json({
+    success: true,
+    message: 'Category deleted successfully'
+  });
+});

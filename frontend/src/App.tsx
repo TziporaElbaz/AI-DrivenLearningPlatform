@@ -3,11 +3,12 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import RegisterPage from './pages/RegisterPage';
-import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsersPage from './pages/AdminUsersPage';
-import LoginPage from './pages/LoginPage';
+import ManageCategoriesPage from './pages/ManageCategoriesPage';
+import UserHistoryPage from './pages/UserHistoryPage';
+import MyLearningPage from './pages/MyLearningPage';
+import ChatPage from './pages/ChatPage';
 import SubCategoriesPage from './pages/SubCategoriesPage';
 
 import './App.css';
@@ -18,12 +19,13 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/my-learning" element={<MyLearningPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/categories" element={<ManageCategoriesPage />} />
+          <Route path="/admin/users/:userId/history" element={<UserHistoryPage />} />
           <Route path="/categories/:id/subcategories" element={<SubCategoriesPage />} />
+          <Route path="/chat/:categoryId/:subCategoryId" element={<ChatPage />} />
         </Routes>
       </Router>
     </Provider>

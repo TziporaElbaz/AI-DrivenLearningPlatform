@@ -1,7 +1,9 @@
 import express, { Router } from 'express';
+import isAdmin from '../middlewares/isAdmin';
 import {
   handleCreatePrompt,
-  handleGetUserPrompts
+  handleGetUserPrompts,
+  handleGetUserPromptsByUserId
 } from '../controllers/promptController';
 import auth from '../middlewares/auth';
 
@@ -54,5 +56,27 @@ router.post('/', auth, handleCreatePrompt);
  *         description: List of prompts
  */
 router.get('/my', auth, handleGetUserPrompts);
+/**
+ * @openapi
+ * /api/prompts/user/{userId}:
+ *   get:
+ *     summary: Get all prompts for a specific user (Admin only)
+ *     tags:
+ *       - Prompts
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of user prompts
+ *       403:
+ *         description: Access denied
+ */
 
+router.get('/user/:userId', auth, isAdmin, handleGetUserPromptsByUserId);
 export default router;

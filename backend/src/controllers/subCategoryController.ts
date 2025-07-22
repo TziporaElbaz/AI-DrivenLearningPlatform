@@ -1,45 +1,92 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getSubCategoriesByCategory, createSubCategory, updateSubCategory, deleteSubCategory } from '../services/subCategoryService';
+import { asyncWrapper } from '../middlewares/asyncWrapper';
+import { AppError } from '../middlewares/errorHandler';
 
-export async function handleGetSubCategories(req: Request, res: Response) {
-  try {
-    const subCategories = await getSubCategoriesByCategory(Number(req.params.categoryId));
-    res.json(subCategories);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+export const handleGetSubCategories = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { categoryId } = req.params;
+  const categoryIdNum = Number(categoryId);
+  
+  if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
+    throw new AppError('Invalid category ID - must be a positive number', 400);
   }
-}
+  
+  const subCategories = await getSubCategoriesByCategory(categoryIdNum);
+  
+  res.json({
+    success: true,
+    data: subCategories
+  });
+});
 
-export async function handleCreateSubCategory(req: Request, res: Response) {
-  try {
-    const { name, category_id } = req.body;
-    const subCategory = await createSubCategory({ name, category_id: Number(category_id) });
-    res.status(201).json(subCategory);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleCreateSubCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { name, category_id } = req.body;
+  
+  if (!name || typeof name !== 'string' || name.trim() === '') {
+    throw new AppError('SubCategory name is required and must be a non-empty string', 400);
   }
-}
+  
+  const categoryIdNum = Number(category_id);
+  if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
+    throw new AppError('Valid category_id is required - must be a positive number', 400);
+  }
+  
+  const subCategory = await createSubCategory({ 
+    name: name.trim(), 
+    category_id: categoryIdNum 
+  });
+  
+  res.status(201).json({
+    success: true,
+    data: subCategory
+  });
+});
 
-export async function handleUpdateSubCategory(req: Request, res: Response) {
-  try {
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
-  return res.status(400).json({ error: 'Invalid subcategory ID' });
-}
-    const { name, category_id } = req.body;
-    const subCategory = await updateSubCategory(id, { name, category_id: Number(category_id) });
-    res.json(subCategory);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleUpdateSubCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const idNum = Number(id);
+  
+  if (isNaN(idNum) || idNum <= 0) {
+    throw new AppError('Invalid subcategory ID - must be a positive number', 400);
   }
-}
+  
+  const { name, category_id } = req.body;
+  
+  if (name && (typeof name !== 'string' || name.trim() === '')) {
+    throw new AppError('SubCategory name must be a non-empty string', 400);
+  }
+  
+  let updateData: any = {};
+  if (name) updateData.name = name.trim();
+  
+  if (category_id !== undefined) {
+    const categoryIdNum = Number(category_id);
+    if (isNaN(categoryIdNum) || categoryIdNum <= 0) {
+      throw new AppError('Valid category_id is required - must be a positive number', 400);
+    }
+    updateData.category_id = categoryIdNum;
+  }
+  
+  const subCategory = await updateSubCategory(idNum, updateData);
+  
+  res.json({
+    success: true,
+    data: subCategory
+  });
+});
 
-export async function handleDeleteSubCategory(req: Request, res: Response) {
-  try {
-    const id = Number(req.params.id);
-    await deleteSubCategory(id);
-    res.json({ message: 'SubCategory deleted' });
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+export const handleDeleteSubCategory = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const idNum = Number(id);
+  
+  if (isNaN(idNum) || idNum <= 0) {
+    throw new AppError('Invalid subcategory ID - must be a positive number', 400);
   }
-}
+  
+  await deleteSubCategory(idNum);
+  
+  res.json({
+    success: true,
+    message: 'SubCategory deleted successfully'
+  });
+});

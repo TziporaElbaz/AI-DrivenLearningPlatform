@@ -23,7 +23,9 @@ const HomePage: React.FC = () => {
     <Container maxWidth="lg" sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 0 }}>
       <Header 
         onLoginClick={() => setOpenAuthModal(true)} 
-        isAuthenticated={isAuthenticated} 
+        isAuthenticated={isAuthenticated}
+        currentPage="home"
+        user={user}
       />
       
       <PageTitle>קטגוריות למידה</PageTitle>
@@ -31,7 +33,6 @@ const HomePage: React.FC = () => {
       <CategoryList onCategoryClick={handleCategoryClick} />
 
 
-      {/* מודאל התחברות/הרשמה */}
       <Dialog open={openAuthModal} onClose={() => {}} disableEscapeKeyDown>
         <AuthModalContent onClose={() => setOpenAuthModal(false)} />
       </Dialog>
