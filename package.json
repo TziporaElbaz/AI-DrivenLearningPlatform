@@ -1,0 +1,16 @@
+﻿{
+  "name": "ai-driven-learning-platform",
+  "version": "1.0.0",
+  "description": "AI-Driven Learning Platform - Full Stack Application", 
+  "scripts": {
+    "install-frontend": "cd frontend && npm install",
+    "install-backend": "cd backend && npm install", 
+    "build-frontend": "cd frontend && npm run build",
+    "build-backend": "cd backend && npm run build",
+    "start-frontend": "cd frontend && npm start",
+    "start-backend": "cd backend && npm start"
+  },
+  "keywords": ["ai", "learning", "platform", "react", "node"],
+  "author": "Tzipora Elbaz",
+  "license": "MIT"
+}
